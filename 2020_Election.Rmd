@@ -13,7 +13,6 @@ library(tidyverse)
 library(janitor)
 library(readr)
 week4_hw_data <- read_csv("week4-hw-data.csv")
-
 ```
 # Graph 1
 ```{r}
