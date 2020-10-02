@@ -1,0 +1,82 @@
+---
+title: "Analysis on Life Expectancy"
+author: "Jay Kim"
+output: github_document
+--- 
+
+# Part One: Introduction
+This data set contains a lot of information on life expectancy in many many different countries across the globe. The World Health Organization, more commonly referred to as 'WHO', began procuring annual life tables for all Member States in 1999. These life tables are a basic input to all WHO estimates of global, regional and country-level patterns and trends in all-cause and cause-specific mortality. The WHO then published these life expectancy estimates for 194 countries total between the years of 2000 and 2015. The WHO seemed to have collected this data for a few reasons. They wanted to see any chances in mortality rates within different countries and how it changed over the course of several years- if at all. They wanted to see if gender played a role in life expectancy or current event during certain times, like the AIDS epidemic. 
+
+
+# Part Two: Analysis + Graphs
+My motivating question is, which countries have the highest in life expentancy and which have the lowest? Have all countries increased these numbers in the past several years? If no, which haven't?
+```{r message=FALSE, warning=FALSE}
+library(readr)
+library(tidyverse)
+library(janitor)
+```
+
+```{r cache=TRUE,message=FALSE, warning=FALSE}
+life <- read_csv("life_data.csv") %>% #Adjusting variable names in data set
+clean_names()
+```
+
+```{r}
+library(ggplot2)
+library(ggalt)
+library(tidyverse)
+theme_set(theme_classic())
+```
+
+Graph 1: This graph first randomly selects 20 countries to plot. It then plots how the life expectancy in that coutnry increased from the years 2000 to 2016. 
+```{r}
+df <- sample_n(life, size = 20) #randomly selecting 20 countries
+df
+gg <- ggplot(df, aes(y=country, x = both_sexes_2000, xend = both_sexes_2016)) + 
+        geom_dumbbell(color="#a3c4dc", 
+                      size=0.75, 
+                      point.colour.l="#0e668b") +
+  labs(title = "Increase in Life Expectancy", 
+       x = "Years",
+       y = "Country")
+geom_segment(data = life, aes(y=concerned, yend=concerned, x=20, xend=100), color="#b2b2b2", size=0.15)
+gg
+```
+
+Graph 2
+First, we had to do some data manipulation. We computed the mean and then created a new column with the difference in life expectancy from 2016 and the mean, we called the column "average".
+```{r}
+diff_life <- life %>%  #Adding a new column that contains the country's deviation in life expectancy from the global average
+  mutate(average = both_sexes_2016 - mean(both_sexes_2016))%>%
+  select(country, both_sexes_2016, average)
+diff_life
+```
+The average life exptectancy is computed below.
+```{r}
+life %>%
+  summarise(mean(both_sexes_2016)) #Global mean of life expectancy
+```
+
+```{r}
+df <- sample_n(diff_life, size = 35)
+df
+ggplot(df, 
+       aes(x = reorder(country, average ), y = average,
+           fill = average >0))+
+  geom_bar(stat = "identity")+
+  coord_flip()+
+  labs(x = "Countries", y="Years",
+       title = "Above or Below Global Average?",
+       subtitle = "The average life expentancy in 2016 was 63.22 years ")
+```
+Because there are so many countries, I needed a graph that would best show the differences in each country. Plotting either a scatter plot or line graph with multiple countries in 1 graph seemed inefficient, and so I thought these two graphs did that best. My first graph is to analyze the increases in life expectancies of 20 randomly selected countries. My second graph is the see how 35 randomly selected countries' life expectancy compare to the global average: 63.22 years. If a country's expectancy was 67 for example, then it was show that that it was 4 years above average. 
+
+Graph 3
+```{r}
+
+```
+
+
+# Part Four
+We can see a few things. First, we see that countries such as Italy, France, and New Zealand have particularly high life expectancy, while Sierra Leone and Lesotho have quite low ones. Countries in Europe and North America have much higher life expectancy on average than countries in Southeast Asia and parts of Africa. 
+
