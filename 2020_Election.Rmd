@@ -5,6 +5,7 @@ output: github_document
 editor_options:
   chunk_output_type: inline
 ---
+
 ```{r}
 library(dplyr)
 library(ggplot2)
