@@ -19,6 +19,7 @@ library(janitor)
 ```{r cache=TRUE,message=FALSE, warning=FALSE}
 life <- read_csv("life_data.csv") %>% #Adjusting variable names in data set
 clean_names()
+life
 ```
 
 ```{r}
@@ -73,9 +74,58 @@ Because there are so many countries, I needed a graph that would best show the d
 
 Graph 3
 ```{r}
-
+library(ggplot2)
+library(scales)
+theme_set(theme_classic())
 ```
 
+```{r}
+life3 <- life%>%
+  select(male_2016, female_2016, country)
+life3
+```
+
+```{r}
+#Fix this below..
+p <- ggplot(life4, aes(x=1, xend=2, y= male_2016, yend=female_2016)) + 
+  geom_segment(col=ifelse((female - male_2016) < 0, "red", "green"), size=.75, show.legend=F) +
+  geom_vline(xintercept=1, linetype="dashed", size=.1) +
+  geom_vline(xintercept=2, linetype="dashed", size=.1) +
+  labs(x="", y="Average Life Expectancy") +
+  xlim(0.5, 2.5) + ylim(52,82) +  # X and Y axis limits
+
+# Add texts
+  geom_text(label=left_label, y=female_2016, x=rep(1, NROW(life4)), hjust=1.1, size=2)+
+  geom_text(label=right_label, y=male_2016, x=rep(2, NROW(life4)), hjust=-0.1, size=2)+
+  geom_text(label="Female ", x=1, y=1.1*(max(female_2016, male_2016)), hjust=1.2, size=4)+
+  geom_text(label="Male", x=2, y=1.1*(max(female_2016, male_2016)), hjust=-0.1, size=4) 
+
+# change theme
+p + theme(panel.background = element_blank(), 
+          panel.grid = element_blank(),
+          axis.ticks = element_blank(),
+          axis.text.x = element_blank(),
+          panel.border = element_blank(),
+          plot.margin = unit(c(.5,.5,.5,.5), "cm"))
+```
+
+```{r}
+life4 <- sample_n(life3, size = 7)
+p <- ggplot(life4) + geom_segment(aes(x=1, xend=2, y= male_2016, yend=female_2016, col=ifelse((life4$female_2016 - life4$male_2016) < 0, "red", "green")), size=.75, show.legend=F) +
+  geom_vline(xintercept=1, linetype="dashed", size=.1) +
+  geom_vline(xintercept=2, linetype="dashed", size=.1) +
+  labs(x="", y="Average Life Expectancy") +
+  xlim(0.5, 2.5) + ylim(52,82) +  # X and Y axis limits
+
+# Add texts
+  geom_text(label=left_label, y=life4$female_2016, x=rep(1, NROW(life4)), hjust=1.1, size=2)+
+  geom_text(label=right_label, y=life4$male_2016, x=rep(2, NROW(life4)), hjust=-0.1, size=2)+
+  geom_text(label="Female ", x=1, y=1.1*(max(life4$female_2016, life4$male_2016)), hjust=1.2, size=4)+
+  geom_text(label="Male", x=2, y=1.1*(max(life4$female_2016, life4$male_2016)), hjust=-0.1, size=4) 
+
+# change theme
+p + theme(plot.margin = unit(c(.5,.5,.5,.5), "cm"))
+```
 
 # Part Four
 We can see a few things. First, we see that countries such as Italy, France, and New Zealand have particularly high life expectancy, while Sierra Leone and Lesotho have quite low ones. Countries in Europe and North America have much higher life expectancy on average than countries in Southeast Asia and parts of Africa. 
