@@ -1,39 +1,43 @@
 ---
 title: "Analysis on Life Expectancy"
 author: "Jay Kim"
-output: github_document
+output: 
+  github_document:
+  code_folding: hide
 --- 
 
 # Part One: Introduction
 This data set contains a lot of information on life expectancy in many many different countries across the globe. The World Health Organization, more commonly referred to as 'WHO', began procuring annual life tables for all Member States in 1999. These life tables are a basic input to all WHO estimates of global, regional and country-level patterns and trends in all-cause and cause-specific mortality. The WHO then published these life expectancy estimates for 194 countries total between the years of 2000 and 2015. The WHO seemed to have collected this data for a few reasons. They wanted to see any chances in mortality rates within different countries and how it changed over the course of several years- if at all. They wanted to see if gender played a role in life expectancy or current event during certain times, like the AIDS epidemic. 
 
-
-# Part Two: Analysis + Graphs
-My motivating question is, which countries have the highest in life expentancy and which have the lowest? Have all countries increased these numbers in the past several years? If no, which haven't?
 ```{r message=FALSE, warning=FALSE}
 library(readr)
 library(tidyverse)
 library(janitor)
+library(maps)
+library(ggplot2)
+library(ggalt)
+theme_set(theme_classic())
+world = map_data("world")
 ```
-
 ```{r cache=TRUE,message=FALSE, warning=FALSE}
 life <- read_csv("life_data.csv") %>% #Adjusting variable names in data set
 clean_names()
 life
 ```
 
+# Graph #1
+This graph first plots the 10 countries where there was the greatest increase in life expectancy and the the 10 countries with the smallest increase of life expectancy(including any decreases as well) from the years 2000 to 2016. But before we can do so, we need to create a dataset that contains the a column with the value of the difference between the life ex. from the time interval 2016 and 2000. We will then we will select the necessary 20 rows. 
 ```{r}
-library(ggplot2)
-library(ggalt)
-library(tidyverse)
-theme_set(theme_classic())
+new_life<- life%>%
+  mutate(increase=both_sexes_2016 - both_sexes_2000)%>%
+  select(country, increase, both_sexes_2016, both_sexes_2000)%>%
+  arrange(desc(increase))%>%
+  slice(tail(row_number(),(10)), head(row_number(),10))
+new_life
 ```
 
-Graph 1: This graph first randomly selects 20 countries to plot. It then plots how the life expectancy in that coutnry increased from the years 2000 to 2016. 
 ```{r}
-df <- sample_n(life, size = 20) #randomly selecting 20 countries
-df
-gg <- ggplot(df, aes(y=country, x = both_sexes_2000, xend = both_sexes_2016)) + 
+ggplot(new_life, aes(y=country, x = both_sexes_2000, xend = both_sexes_2016)) + 
         geom_dumbbell(color="#a3c4dc", 
                       size=0.75, 
                       point.colour.l="#0e668b") +
@@ -41,10 +45,11 @@ gg <- ggplot(df, aes(y=country, x = both_sexes_2000, xend = both_sexes_2016)) +
        x = "Years",
        y = "Country")
 geom_segment(data = life, aes(y=concerned, yend=concerned, x=20, xend=100), color="#b2b2b2", size=0.15)
-gg
 ```
+We see that all countries saw an increase but one (if you look at the last entry), the Syrain Arab Republic. They had a decrease in life ex. by 7.3 years. 
 
-Graph 2
+
+# Graph 2
 First, we had to do some data manipulation. We computed the mean and then created a new column with the difference in life expectancy from 2016 and the mean, we called the column "average".
 ```{r}
 diff_life <- life %>%  #Adding a new column that contains the country's deviation in life expectancy from the global average
@@ -68,65 +73,52 @@ ggplot(df,
   coord_flip()+
   labs(x = "Countries", y="Years",
        title = "Above or Below Global Average?",
-       subtitle = "The average life expentancy in 2016 was 63.22 years ")
+       subtitle = "The average life expentancy in 2016 was 63.22 years ")+
+  scale_fill_discrete(name = "", labels = c("Below Average", "Above Avergae"))
 ```
-Because there are so many countries, I needed a graph that would best show the differences in each country. Plotting either a scatter plot or line graph with multiple countries in 1 graph seemed inefficient, and so I thought these two graphs did that best. My first graph is to analyze the increases in life expectancies of 20 randomly selected countries. My second graph is the see how 35 randomly selected countries' life expectancy compare to the global average: 63.22 years. If a country's expectancy was 67 for example, then it was show that that it was 4 years above average. 
+We can see a few things here. This graph shows how 35 randomly selected countries' life expectancy compare to the global average: 63.22 years. If a country's expectancy was 67 for example, then it was show that that it was 4 years above average.Countries in Europe and North America have much higher life expectancy on average than countries in Southeast Asia and parts of Africa. This could be a result in the differences of living in a more developed country versus a developing country. Developing countries, such as those in Sub-Saharan Africa, deal with issues that places such as Switzerland, Norway, and Italy do not: famine, low level of education, availability of clean water, among many others. Developed countries not only do not have to worry as much about issues like those, but also have improved and robust medical care in place in case their citizens fall ill. 
 
-Graph 3
+
+# Graph 3
 ```{r}
 library(ggplot2)
 library(scales)
 theme_set(theme_classic())
 ```
 
+In the code below we want to see the difference in life expectancy between women and men in each country and then arrange them in descending order. If the difference (stored in 'diff') is positive, then it means that in that country, women have a higher life expectancy.
 ```{r}
 life3 <- life%>%
-  select(male_2016, female_2016, country)
+  select(male_2016, female_2016, country)%>%
+  mutate(diff = female_2016 - male_2016)%>%
+  arrange(desc(diff))
 life3
 ```
+Russian Federation, Lithuania, and Belarus has the highest difference of about 8 years- which is a big difference! We can then look at the last few entries of this data set which will tell us the countries that have the biggest gaps but with men with the high life expectancy. We will graph the top 3 from both ends of the dataset below to analyze. But quickly, we will create a dataset that contains these 6 values.
+```{r}
+Big_Diff <- life3%>%
+  slice(tail(row_number(),3), head(row_number(),4))
+Big_Diff
+```
+
 
 ```{r}
-#Fix this below..
-p <- ggplot(life4, aes(x=1, xend=2, y= male_2016, yend=female_2016)) + 
-  geom_segment(col=ifelse((female - male_2016) < 0, "red", "green"), size=.75, show.legend=F) +
+#how to add color by country
+#How to hide code
+#Is adding 1 graph enough?
+Big_Diff
+p <- ggplot(Big_Diff, aes(x=1, xend=2, y= male_2016, yend=female_2016)) + 
+  geom_segment( size=.75, show.legend=T) +
   geom_vline(xintercept=1, linetype="dashed", size=.1) +
   geom_vline(xintercept=2, linetype="dashed", size=.1) +
   labs(x="", y="Average Life Expectancy") +
-  xlim(0.5, 2.5) + ylim(52,82) +  # X and Y axis limits
+  xlim(0.75, 2.25) + ylim(60,71)+   # X and Y axis limits 
+ geom_text(label="Men", x=1, y=71)+
+  geom_text(label="Women", x=2, y=71)
+p
 
-# Add texts
-  geom_text(label=left_label, y=female_2016, x=rep(1, NROW(life4)), hjust=1.1, size=2)+
-  geom_text(label=right_label, y=male_2016, x=rep(2, NROW(life4)), hjust=-0.1, size=2)+
-  geom_text(label="Female ", x=1, y=1.1*(max(female_2016, male_2016)), hjust=1.2, size=4)+
-  geom_text(label="Male", x=2, y=1.1*(max(female_2016, male_2016)), hjust=-0.1, size=4) 
-
-# change theme
-p + theme(panel.background = element_blank(), 
-          panel.grid = element_blank(),
-          axis.ticks = element_blank(),
-          axis.text.x = element_blank(),
-          panel.border = element_blank(),
-          plot.margin = unit(c(.5,.5,.5,.5), "cm"))
 ```
+Interestingly, the top countries where the women live longer live a lot longer than the countries where men live longer. We may have only graphed 3 countries from both criteria, but if you were to go back and look at the life3 data set, most of the values in the 'diff' column are indeed positive, meaning the women live longer. 
 
-```{r}
-life4 <- sample_n(life3, size = 7)
-p <- ggplot(life4) + geom_segment(aes(x=1, xend=2, y= male_2016, yend=female_2016, col=ifelse((life4$female_2016 - life4$male_2016) < 0, "red", "green")), size=.75, show.legend=F) +
-  geom_vline(xintercept=1, linetype="dashed", size=.1) +
-  geom_vline(xintercept=2, linetype="dashed", size=.1) +
-  labs(x="", y="Average Life Expectancy") +
-  xlim(0.5, 2.5) + ylim(52,82) +  # X and Y axis limits
 
-# Add texts
-  geom_text(label=left_label, y=life4$female_2016, x=rep(1, NROW(life4)), hjust=1.1, size=2)+
-  geom_text(label=right_label, y=life4$male_2016, x=rep(2, NROW(life4)), hjust=-0.1, size=2)+
-  geom_text(label="Female ", x=1, y=1.1*(max(life4$female_2016, life4$male_2016)), hjust=1.2, size=4)+
-  geom_text(label="Male", x=2, y=1.1*(max(life4$female_2016, life4$male_2016)), hjust=-0.1, size=4) 
-
-# change theme
-p + theme(plot.margin = unit(c(.5,.5,.5,.5), "cm"))
-```
-
-# Part Four
-We can see a few things. First, we see that countries such as Italy, France, and New Zealand have particularly high life expectancy, while Sierra Leone and Lesotho have quite low ones. Countries in Europe and North America have much higher life expectancy on average than countries in Southeast Asia and parts of Africa. 
 
