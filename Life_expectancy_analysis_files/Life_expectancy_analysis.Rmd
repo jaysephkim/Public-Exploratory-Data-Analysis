@@ -118,7 +118,7 @@ p <- ggplot(Big_Diff, aes(x=1, xend=2, y= male_2016, yend=female_2016, colour=co
 p
 
 ```
-Interestingly, the top countries where the women live longer live a lot longer than the top countries where men live longer. We may have only graphed 3 countries from both criteria, but if you were to go back and look at the life3 data set, most of the values in the 'diff' column are indeed positive, meaning the women live longer.  
+Interestingly, the top countries where the women live longer live a lot longer than the top countries where men live longer. We may have only graphed 3 countries from both criteria, but if you were to go back and look at the life3 data set, most of the values in the 'diff' column are indeed positive, meaning the women live longer.   
 
 
 ```{r}
