@@ -2,8 +2,6 @@
 title: "A Quick Analysis on the 2020 Election"
 author: Jay Kim
 output: github_document
-editor_options:
-  chunk_output_type: inline
 ---
 
 ```{r}
@@ -12,11 +10,11 @@ library(ggplot2)
 library(tidyverse)
 library(janitor)
 library(readr)
-week4_hw_data <- read_csv("week4-hw-data.csv")
+election_data <- read_csv("week4-hw-data.csv")
 ```
 # Graph 1
 ```{r}
-ggplot(week4_hw_data, aes(x=trump, y=discrim))+
+ggplot(election_data, aes(x=trump, y=discrim))+
   geom_point(col="blue",size = 1.5)+
   scale_x_continuous(breaks = seq(0, 1, 0.1), labels= function(x){paste0(x*100, '%')})+
   scale_y_continuous(breaks = seq(0, 1, 0.1), labels= function(x){paste0(x*100, '%')})+ #how to do this correctly
@@ -32,9 +30,9 @@ This graph is misleading becase if you were to take out the leftmost and right/b
 
 # Graph 2
 ```{r}
-week4_hw_data$party <- ifelse(week4_hw_data$state %in% c("CA", "NY","WA", "OR","NV","CO","NM","MN","IL","VA","MA", "RI", "CT", "NJ", "DE", "DC", "VT", "NH" ), 'Biden',      
-                       ifelse(week4_hw_data$state %in% c("ID", "MT", "WY", "UT", "ND", "SD", "KS", "OK", "TX", "AR", "LA", "MS", "AL", "TN", "KY", "IN", "WY" ), 'Trump', "Toss Up"))
-week4_hw_data %>% 
+election_data$party <- ifelse(election_data$state %in% c("CA", "NY","WA", "OR","NV","CO","NM","MN","IL","VA","MA", "RI", "CT", "NJ", "DE", "DC", "VT", "NH" ), 'Biden',      
+                       ifelse(election_data$state %in% c("ID", "MT", "WY", "UT", "ND", "SD", "KS", "OK", "TX", "AR", "LA", "MS", "AL", "TN", "KY", "IN", "WY" ), 'Trump', "Toss Up"))
+election_data %>% 
   ggplot(aes(x= trump, y= discrim, col= party))+
   geom_point()+
   geom_text(aes(label= ifelse(trump<1, as.character(state), ''),),hjust=1.5, vjust =0, size =2)+

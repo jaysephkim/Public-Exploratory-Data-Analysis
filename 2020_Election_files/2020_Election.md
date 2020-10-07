@@ -22,13 +22,13 @@ library(ggplot2)
 library(tidyverse)
 ```
 
-    ## ── Attaching packages ────────────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──
+    ## ── Attaching packages ───────────── tidyverse 1.3.0 ──
 
     ## ✓ tibble  3.0.3     ✓ purrr   0.3.4
     ## ✓ tidyr   1.1.2     ✓ stringr 1.4.0
     ## ✓ readr   1.3.1     ✓ forcats 0.5.0
 
-    ## ── Conflicts ───────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ── Conflicts ──────────────── tidyverse_conflicts() ──
     ## x dplyr::filter() masks stats::filter()
     ## x dplyr::lag()    masks stats::lag()
 
@@ -45,7 +45,7 @@ library(janitor)
 
 ``` r
 library(readr)
-week4_hw_data <- read_csv("week4-hw-data.csv")
+election_data <- read_csv("week4-hw-data.csv")
 ```
 
     ## Warning: Missing column names filled in: 'X1' [1]
@@ -61,7 +61,7 @@ week4_hw_data <- read_csv("week4-hw-data.csv")
 # Graph 1
 
 ``` r
-ggplot(week4_hw_data, aes(x=trump, y=discrim))+
+ggplot(election_data, aes(x=trump, y=discrim))+
   geom_point(col="blue",size = 1.5)+
   scale_x_continuous(breaks = seq(0, 1, 0.1), labels= function(x){paste0(x*100, '%')})+
   scale_y_continuous(breaks = seq(0, 1, 0.1), labels= function(x){paste0(x*100, '%')})+ #how to do this correctly
@@ -85,9 +85,9 @@ length.
 # Graph 2
 
 ``` r
-week4_hw_data$party <- ifelse(week4_hw_data$state %in% c("CA", "NY","WA", "OR","NV","CO","NM","MN","IL","VA","MA", "RI", "CT", "NJ", "DE", "DC", "VT", "NH" ), 'Biden',      
-                       ifelse(week4_hw_data$state %in% c("ID", "MT", "WY", "UT", "ND", "SD", "KS", "OK", "TX", "AR", "LA", "MS", "AL", "TN", "KY", "IN", "WY" ), 'Trump', "Toss Up"))
-week4_hw_data %>% 
+election_data$party <- ifelse(election_data$state %in% c("CA", "NY","WA", "OR","NV","CO","NM","MN","IL","VA","MA", "RI", "CT", "NJ", "DE", "DC", "VT", "NH" ), 'Biden',      
+                       ifelse(election_data$state %in% c("ID", "MT", "WY", "UT", "ND", "SD", "KS", "OK", "TX", "AR", "LA", "MS", "AL", "TN", "KY", "IN", "WY" ), 'Trump', "Toss Up"))
+election_data %>% 
   ggplot(aes(x= trump, y= discrim, col= party))+
   geom_point()+
   geom_text(aes(label= ifelse(trump<1, as.character(state), ''),),hjust=1.5, vjust =0, size =2)+
