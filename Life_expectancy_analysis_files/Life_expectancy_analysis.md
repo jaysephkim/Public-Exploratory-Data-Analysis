@@ -303,14 +303,14 @@ Big_Diff
     ## 7      62.5        70   Venezuela (Bolivarian Republic of)  7.5
 
 ``` r
-p <- ggplot(Big_Diff, aes(x=1, xend=2, y= male_2016, yend=female_2016)) + 
-  geom_segment( size=.75, show.legend=T) +
+p <- ggplot(Big_Diff, aes(x=1, xend=2, y= male_2016, yend=female_2016, colour=country)) + 
+  geom_segment(size=.75, show.legend=T) +
   geom_vline(xintercept=1, linetype="dashed", size=.1) +
   geom_vline(xintercept=2, linetype="dashed", size=.1) +
   labs(x="", y="Average Life Expectancy") +
   xlim(0.75, 2.25) + ylim(60,71)+   # X and Y axis limits 
- geom_text(label="Men", x=1, y=71)+
-  geom_text(label="Women", x=2, y=71)
+ geom_text(label="Men", x=1, y=71, color="Black")+
+  geom_text(label="Women", x=2, y=71, color="Black")
 p
 ```
 

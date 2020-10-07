@@ -2,8 +2,8 @@
 title: "Analysis on Life Expectancy"
 author: "Jay Kim"
 output: 
-  github_document:
-  code_folding: hide
+  html_document:
+    code_folding: hide
 --- 
 
 # Part One: Introduction
@@ -107,18 +107,25 @@ Big_Diff
 #How to hide code
 #Is adding 1 graph enough?
 Big_Diff
-p <- ggplot(Big_Diff, aes(x=1, xend=2, y= male_2016, yend=female_2016)) + 
-  geom_segment( size=.75, show.legend=T) +
+p <- ggplot(Big_Diff, aes(x=1, xend=2, y= male_2016, yend=female_2016, colour=country)) + 
+  geom_segment(size=.75, show.legend=T) +
   geom_vline(xintercept=1, linetype="dashed", size=.1) +
   geom_vline(xintercept=2, linetype="dashed", size=.1) +
   labs(x="", y="Average Life Expectancy") +
   xlim(0.75, 2.25) + ylim(60,71)+   # X and Y axis limits 
- geom_text(label="Men", x=1, y=71)+
-  geom_text(label="Women", x=2, y=71)
+ geom_text(label="Men", x=1, y=71, color="Black")+
+  geom_text(label="Women", x=2, y=71, color="Black")
 p
 
 ```
-Interestingly, the top countries where the women live longer live a lot longer than the countries where men live longer. We may have only graphed 3 countries from both criteria, but if you were to go back and look at the life3 data set, most of the values in the 'diff' column are indeed positive, meaning the women live longer. 
+Interestingly, the top countries where the women live longer live a lot longer than the top countries where men live longer. We may have only graphed 3 countries from both criteria, but if you were to go back and look at the life3 data set, most of the values in the 'diff' column are indeed positive, meaning the women live longer. 
 
+
+```{r}
+life3%>%
+  summarise(mean(diff))
+```
+
+Just out of curiosity I calculated the average difference between all countries, and it comes out to be 3.26 years. 
 
 
