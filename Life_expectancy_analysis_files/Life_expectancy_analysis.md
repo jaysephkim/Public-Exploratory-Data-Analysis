@@ -318,7 +318,20 @@ p
 
 ![](Life_expectancy_analysis_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 Interestingly, the top countries where the women live longer live a lot
-longer than the countries where men live longer. We may have only
+longer than the top countries where men live longer. We may have only
 graphed 3 countries from both criteria, but if you were to go back and
 look at the life3 data set, most of the values in the ‘diff’ column are
-indeed positive, meaning the women live longer.
+indeed positive, meaning the women live longer
+
+``` r
+life3%>%
+  summarise(mean(diff))
+```
+
+    ## # A tibble: 1 x 1
+    ##   `mean(diff)`
+    ##          <dbl>
+    ## 1         3.26
+
+Just out of curiosity I calculated the average difference between all
+countries, and it comes out to be 3.26 years.
